@@ -130,15 +130,11 @@ exports.forgotPassword = async (req, res) => {
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
         await user.save();
-        const resetUrl = `http://127.0.0.1:5500/frontend/html/reset.html?token=${token}`;
+        const resetUrl = `https://blog-frontend-new-plum.vercel.app/reset.html?token=${token}`;
                 // EMAIL MESSAGE ME ALERT ADD KIYA GAYA HAI
         const emailBody = `
             <p>Click this link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>
             <hr>
-            <p style="color:red; font-weight:bold;">
-                Important Alert: Please open this link on the same computer where your server is running. 
-                This link will not work on a different device like a mobile phone.
-            </p>
         `;
 
         await mailSender(email, "Password Reset Link", emailBody);
