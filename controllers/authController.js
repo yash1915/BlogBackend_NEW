@@ -121,7 +121,7 @@ exports.login = async (req, res) => {
 // FORGOT PASSWORD (Corrected Version)
 exports.forgotPassword = async (req, res) => {
     try {
-        const { email, deviceToken } = req.body;
+        const { email } = req.body;
         if (!deviceToken) {
             return res.status(400).json({ success: false, message: "Device identifier is missing." });
         }
