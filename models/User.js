@@ -1,3 +1,5 @@
+// backend/models/User.js
+
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -8,9 +10,7 @@ const userSchema = new mongoose.Schema({
     additionalDetails: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Profile" },
     image: { type: String, required: true },
     resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
-    // Yeh nayi line add karein
-    resetPasswordDeviceToken: { type: String },
+    resetPasswordExpires: { type: Date }, 
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }]
 }, { timestamps: true });
 
