@@ -118,42 +118,56 @@ exports.login = async (req, res) => {
     }
 };
 
-// FORGOT PASSWORD
+// FORGOT PASSWORD (Corrected Version)
 exports.forgotPassword = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { email, deviceToken } = req.body;
+        if (!deviceToken) {
+            return res.status(400).json({ success: false, message: "Device identifier is missing." });
+        }
+
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: "Your email is not registered." });
+            return res.status(404).json({ success: false, message: "This email is not registered." });
         }
+
         const token = crypto.randomBytes(20).toString('hex');
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        user.resetPasswordDeviceToken = deviceToken;
         await user.save();
+        
+        // 1. Reset URL ko theek kiya gaya hai
         const resetUrl = `https://blog-frontend-new-plum.vercel.app/reset.html?token=${token}`;
-                // EMAIL MESSAGE ME ALERT ADD KIYA GAYA HAI
-        const emailBody = `
-            <p>Click this link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>
-            <hr>
-        `;
+        
+        // 2. Email se galat alert hata diya gaya hai
+        const emailBody = `<p>Click this link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>`;
 
         await mailSender(email, "Password Reset Link", emailBody);
 
+        // 3. Yeh line sabse zaroori hai. Frontend ko success message bhejein.
+        return res.status(200).json({ 
+            success: true, 
+            message: "Password reset link has been sent to your email." 
+        });
+
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error sending reset password mail." });
+        console.error("Forgot Password Error:", error);
+        return res.status(500).json({ success: false, message: "Error sending reset password mail." });
     }
 };
 
 // RESET PASSWORD
 exports.resetPassword = async (req, res) => {
     try {
-        const { token, password, confirmPassword } = req.body;
+        const { token, password, confirmPassword , deviceToken} = req.body;
         if (password !== confirmPassword) {
             return res.status(400).json({ success: false, message: "Passwords do not match." });
         }
         const user = await User.findOne({
             resetPasswordToken: token,
             resetPasswordExpires: { $gt: Date.now() },
+            resetPasswordDeviceToken: deviceToken,
         });
         if (!user) {
             return res.status(400).json({ success: false, message: "Token is invalid or has expired." });
@@ -161,6 +175,7 @@ exports.resetPassword = async (req, res) => {
         user.password = await bcrypt.hash(password, 10);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
+         user.resetPasswordDeviceToken = undefined; // Token ko istemal ke baad hata dein
         await user.save();
         res.json({ success: true, message: "Password has been reset successfully." });
     } catch (error) {
