@@ -134,7 +134,6 @@ exports.forgotPassword = async (req, res) => {
         const token = crypto.randomBytes(20).toString('hex');
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-        user.resetPasswordDeviceToken = deviceToken;
         await user.save();
         
         // 1. Reset URL ko theek kiya gaya hai
@@ -160,7 +159,7 @@ exports.forgotPassword = async (req, res) => {
 // RESET PASSWORD
 exports.resetPassword = async (req, res) => {
     try {
-        const { token, password, confirmPassword , deviceToken} = req.body;
+        const { token, password, confirmPassword } = req.body;
         if (password !== confirmPassword) {
             return res.status(400).json({ success: false, message: "Passwords do not match." });
         }
@@ -170,15 +169,12 @@ exports.resetPassword = async (req, res) => {
             resetPasswordDeviceToken: deviceToken,
         });
         if (!user) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Token is invalid, has expired, or is being used on the wrong device." 
-            });
+            return res.status(400).json({ success: false, message: "Token is invalid or has expired." });
         }
         user.password = await bcrypt.hash(password, 10);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
-         user.resetPasswordDeviceToken = undefined; // Token ko istemal ke baad hata dein
+         
         await user.save();
         res.json({ success: true, message: "Password has been reset successfully." });
     } catch (error) {
