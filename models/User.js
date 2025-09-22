@@ -9,8 +9,9 @@ const userSchema = new mongoose.Schema({
     image: { type: String, required: true },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    // Yeh nayi line add karein
+    resetPasswordDeviceToken: { type: String },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }]
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
-
