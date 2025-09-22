@@ -170,7 +170,10 @@ exports.resetPassword = async (req, res) => {
             resetPasswordDeviceToken: deviceToken,
         });
         if (!user) {
-            return res.status(400).json({ success: false, message: "Token is invalid or has expired." });
+            return res.status(400).json({ 
+                success: false, 
+                message: "Token is invalid, has expired, or is being used on the wrong device." 
+            });
         }
         user.password = await bcrypt.hash(password, 10);
         user.resetPasswordToken = undefined;
