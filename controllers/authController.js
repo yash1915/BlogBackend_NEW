@@ -139,9 +139,21 @@ exports.forgotPassword = async (req, res) => {
         // 1. Reset URL ko theek kiya gaya hai
         const resetUrl = `https://blog-frontend-new-plum.vercel.app/reset.html?token=${token}`;
         
-        // 2. Email se galat alert hata diya gaya hai
-        const emailBody = `<p>Click this link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>`;
-
+         const emailBody = `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2>Password Reset Request</h2>
+                <p>Hello,</p>
+                <p>You are receiving this email because a password reset request was made for your account.</p>
+                <p>Please click the link below to reset your password:</p>
+                <a href="${resetUrl}" style="background-color: #4a90e2; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+                <br>
+                <p style="margin-top: 20px; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; border-radius: 5px;">
+                    <strong>Important:</strong> For your security, this link will only work on the same device and in the same browser where the reset request was initiated.
+                </p>
+                <p>If you did not request a password reset, you can safely ignore this email.</p>
+                <p>Thanks,<br>The BlogApp Team</p>
+            </div>
+        `;
         await mailSender(email, "Password Reset Link", emailBody);
 
         // 3. Yeh line sabse zaroori hai. Frontend ko success message bhejein.
