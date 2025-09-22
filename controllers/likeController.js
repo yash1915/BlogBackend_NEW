@@ -12,22 +12,24 @@ exports.togglePostLike = async (req, res) => {
       return res.status(404).json({ success: false, error: "Post not found" });
     }
 
-    const alreadyLikedIndex = post.likes.indexOf(userId);
+    // Sahi tareeka: Check karein ki user ne pehle se like kiya hai ya nahin
+    const isLiked = post.likes.some(likeId => likeId.equals(userId));
 
-    if (alreadyLikedIndex > -1) {
-      // Unlike
-      post.likes.splice(alreadyLikedIndex, 1);
+    if (isLiked) {
+      // Agar pehle se liked hai, to unlike karein
+      post.likes.pull(userId);
     } else {
-      // Like
+      // Agar liked nahin hai, to like karein
       post.likes.push(userId);
     }
 
     await post.save();
+    // `.populate()` ko yahan use karein taaki response mein updated names aayein
     const populatedPost = await Post.findById(postId).populate("likes", "firstName lastName");
 
     return res.status(200).json({
       success: true,
-      message: alreadyLikedIndex > -1 ? "Post unliked" : "Post liked",
+      message: isLiked ? "Post unliked" : "Post liked",
       post: populatedPost
     });
 
@@ -47,22 +49,25 @@ exports.toggleCommentLike = async (req, res) => {
             return res.status(404).json({ success: false, error: "Comment not found" });
         }
 
-        const alreadyLikedIndex = comment.likes.indexOf(userId);
+        // Sahi tareeka: Check karein ki user ne pehle se like kiya hai ya nahin
+        const isLiked = comment.likes.some(likeId => likeId.equals(userId));
 
-        if (alreadyLikedIndex > -1) {
-            // Unlike
-            comment.likes.splice(alreadyLikedIndex, 1);
+        if (isLiked) {
+            // Agar pehle se liked hai, to unlike karein
+            comment.likes.pull(userId);
         } else {
-            // Like
+            // Agar liked nahin hai, to like karein
             comment.likes.push(userId);
         }
         
         await comment.save();
+        const populatedComment = await Comment.findById(commentId).populate("likes", "firstName lastName");
+
 
         return res.status(200).json({
             success: true,
-            message: alreadyLikedIndex > -1 ? "Comment unliked" : "Comment liked",
-            comment
+            message: isLiked ? "Comment unliked" : "Comment liked",
+            comment: populatedComment
         });
 
     } catch (err) {
