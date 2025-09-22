@@ -122,9 +122,6 @@ exports.login = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        if (!deviceToken) {
-            return res.status(400).json({ success: false, message: "Device identifier is missing." });
-        }
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -178,7 +175,6 @@ exports.resetPassword = async (req, res) => {
         const user = await User.findOne({
             resetPasswordToken: token,
             resetPasswordExpires: { $gt: Date.now() },
-            resetPasswordDeviceToken: deviceToken,
         });
         if (!user) {
             return res.status(400).json({ success: false, message: "Token is invalid or has expired." });
