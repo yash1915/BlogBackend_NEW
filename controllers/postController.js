@@ -50,18 +50,38 @@ exports.createPost = async (req, res) => {
     }
 };
 
-// GET ALL POSTS
+// GET ALL POSTS (Updated with Pagination)
 exports.getAllPosts = async (req, res) => {
   try {
+    // Get page number and limit from the query, with default values
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Fetch 10 posts per page
+    const skip = (page - 1) * limit;
+
+    // Fetch only the posts for the current page
     const posts = await Post.find()
       .populate("author", "firstName lastName")
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .exec();
-    return res.status(200).json({ success: true, posts });
+    
+    // Get the total number of posts to calculate total pages
+    const totalPosts = await Post.countDocuments();
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    // Send back the posts along with pagination info
+    return res.status(200).json({ 
+        success: true, 
+        posts,
+        totalPages,
+        currentPage: page
+    });
   } catch (err) {
     return res.status(500).json({ success: false, error: "Error while fetching posts" });
   }
 };
+
 
 // GET POST BY ID (Updated to populate nested comments and likes)
 exports.getPostById = async (req, res) => {
