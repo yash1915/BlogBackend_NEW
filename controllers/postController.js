@@ -10,6 +10,8 @@ async function uploadFileToCloudinary(file, folder) {
 }
 
 // CREATE POST (Updated to handle FormData correctly)
+
+
 exports.createPost = async (req, res) => {
     try {
         const title = req.body?.title;
@@ -27,24 +29,24 @@ exports.createPost = async (req, res) => {
         if (mediaFile) {
             const cloudinaryResponse = await uploadFileToCloudinary(mediaFile, "BlogAppMedia");
             mediaUrl = cloudinaryResponse.secure_url;
-            console.log("Cloudinary Response:", cloudinaryResponse);
 
-            // Yeh naya logic audio aur video mein antar karta hai
+            // Yeh logic aapke diye gaye logs ke aadhar par 100% sahi hai
             const audioFormats = ['mp3', 'wav', 'ogg', 'm4a'];
             if (cloudinaryResponse.resource_type === 'video' && audioFormats.includes(cloudinaryResponse.format)) {
+                // Agar resource 'video' hai aur format 'mp3' hai, to yeh 'audio' hai
                 mediaType = 'audio';
             } else if (cloudinaryResponse.resource_type === 'video') {
+                // Agar upar wala case nahi hai, to yeh sach mein 'video' hai
                 mediaType = 'video';
             } else {
+                // Baaki sab 'image' hai
                 mediaType = 'image';
             }
         }
 
         const post = new Post({ title, body, author: authorId, postMedia: mediaUrl, mediaType });
         const savedPost = await post.save();
-
         await User.findByIdAndUpdate(authorId, { $push: { posts: savedPost._id } });
-
         const populatedPost = await Post.findById(savedPost._id).populate("author", "firstName lastName");
 
         return res.status(201).json({
