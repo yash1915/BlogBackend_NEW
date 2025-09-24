@@ -154,6 +154,8 @@ exports.updatePost = async (req, res) => {
 };
 
 // DELETE POST
+
+
 exports.deletePost = async (req, res) => {
     try {
         const { id } = req.params;
@@ -167,10 +169,21 @@ exports.deletePost = async (req, res) => {
             return res.status(403).json({ success: false, error: "You are not authorized to delete this post" });
         }
 
+        // --- THIS LOGIC IS NOW CORRECTED ---
         if (post.postMedia) {
-            const publicIdWithFolder = post.postMedia.split('/').slice(-2).join('/').split('.')[0];
-            await cloudinary.uploader.destroy(publicIdWithFolder, { resource_type: post.mediaType });
+            const publicId = post.postMedia.split('/').pop().split('.')[0];
+            const folder = "BlogAppMedia";
+            const publicIdWithFolder = `${folder}/${publicId}`;
+
+            // Correctly determine the resource type for Cloudinary
+            let resourceType = post.mediaType;
+            if (post.mediaType === 'audio') {
+                resourceType = 'video'; // Treat audio as video for deletion
+            }
+
+            await cloudinary.uploader.destroy(publicIdWithFolder, { resource_type: resourceType });
         }
+        // ------------------------------------
         
         await Comment.deleteMany({ post: id });
         await Post.findByIdAndDelete(id);
