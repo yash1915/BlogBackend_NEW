@@ -22,7 +22,7 @@ const postSchema = new mongoose.Schema({
   // Media type (image/video) store karne ke liye
   mediaType: {
     type: String,
-    enum: ['image', 'video']
+    enum: ['image', 'video','audio']
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
