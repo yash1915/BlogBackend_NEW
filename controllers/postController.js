@@ -28,7 +28,7 @@ exports.createPost = async (req, res) => {
             const cloudinaryResponse = await uploadFileToCloudinary(mediaFile, "BlogAppMedia");
             mediaUrl = cloudinaryResponse.secure_url;
 
-            // This updated logic checks if the uploaded file is an audio file
+            // Yeh naya logic audio aur video mein antar karta hai
             const audioFormats = ['mp3', 'wav', 'ogg', 'm4a'];
             if (cloudinaryResponse.resource_type === 'video' && audioFormats.includes(cloudinaryResponse.format)) {
                 mediaType = 'audio';
