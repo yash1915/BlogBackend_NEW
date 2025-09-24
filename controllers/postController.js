@@ -12,10 +12,8 @@ async function uploadFileToCloudinary(file, folder) {
 // CREATE POST (Updated to handle FormData correctly)
 exports.createPost = async (req, res) => {
     try {
-        // Yahan par badlaav kiya gaya hai
-        const title = req.body?.title;//?->Optional Chaining
-        const body = req.body?.body;//?->Yeh code crash hone se bachata hai: agar req.body maujood hai to usse title nikalo, Agar nahi (woh undefined hai): To aage mat badho, bas undefined return kar do aur code ko crash hone se bacha lo.
-        
+        const title = req.body?.title;
+        const body = req.body?.body;
         const authorId = req.user.id;
         const mediaFile = req.files ? req.files.postMedia : null;
 
@@ -29,7 +27,16 @@ exports.createPost = async (req, res) => {
         if (mediaFile) {
             const cloudinaryResponse = await uploadFileToCloudinary(mediaFile, "BlogAppMedia");
             mediaUrl = cloudinaryResponse.secure_url;
-            mediaType = cloudinaryResponse.resource_type === 'video' ? 'video' : 'image';
+
+            // This updated logic checks if the uploaded file is an audio file
+            const audioFormats = ['mp3', 'wav', 'ogg', 'm4a'];
+            if (cloudinaryResponse.resource_type === 'video' && audioFormats.includes(cloudinaryResponse.format)) {
+                mediaType = 'audio';
+            } else if (cloudinaryResponse.resource_type === 'video') {
+                mediaType = 'video';
+            } else {
+                mediaType = 'image';
+            }
         }
 
         const post = new Post({ title, body, author: authorId, postMedia: mediaUrl, mediaType });
@@ -49,7 +56,6 @@ exports.createPost = async (req, res) => {
         return res.status(500).json({ success: false, error: "Error while creating post" });
     }
 };
-
 // GET ALL POSTS (Updated with Pagination)
 exports.getAllPosts = async (req, res) => {
   try {
