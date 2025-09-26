@@ -60,14 +60,12 @@ exports.signup = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const profileDetails = await Profile.create({ gender: null, dateOfBirth: null, about: null });
         
         let user = await User.create({
             firstName,
             lastName,
             email,
             password: hashedPassword,
-            additionalDetails: profileDetails._id,
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
         });
 
@@ -97,7 +95,7 @@ exports.login = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
-        const user = await User.findOne({ email }).populate("additionalDetails");
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({ success: false, message: "User is not registered" });
         }
@@ -208,7 +206,6 @@ exports.deleteAccount = async (req, res) => {
         }
         await Post.deleteMany({ author: userId });
         await Comment.deleteMany({ user: userId });
-        await Profile.findByIdAndDelete(user.additionalDetails);
         await User.findByIdAndDelete(userId);
         res.status(200).json({ success: true, message: "Account deleted successfully." });
     } catch (error) {
