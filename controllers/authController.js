@@ -66,7 +66,6 @@ exports.signup = async (req, res) => {
             lastName,
             email,
             password: hashedPassword,
-            image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
         });
 
         // === YEH CODE ADD KIYA GAYA HAI ===
