@@ -19,11 +19,10 @@ exports.updateProfile = async (req, res) => {
         const { about } = req.body;
         const userId = req.user.id;
 
-        // Seedhe User model ko update karein
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            { about },
-            { new: true } // Taaki updated user return ho
+            { about }, // Sirf 'about' ko update karein
+            { new: true }
         ).select("-password");
 
         res.status(200).json({ 
