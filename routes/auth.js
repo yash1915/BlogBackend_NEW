@@ -12,8 +12,7 @@ const {
 } = require("../controllers/authController");
 
 const { 
-    getMyProfile, 
-    updateProfile 
+    getMyProfile,
 } = require("../controllers/profileController");
 
 
@@ -28,7 +27,6 @@ router.post("/reset-password", resetPassword);
 
 // --- PROFILE & ACCOUNT ROUTES (Protected) ---
 router.get("/me", auth, getMyProfile);
-router.put("/profile", auth, updateProfile);
 router.delete("/account", auth, deleteAccount);
 
 module.exports = router;
