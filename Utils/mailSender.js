@@ -3,19 +3,15 @@ require("dotenv").config();
 
 const mailSender = async (email, title, body) => {
   try {
-    // Transporter create karein (naya, behtar version)
+    // Transporter create karein (Brevo ke liye sahi settings ke saath)
     let transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
-      port: 587, // Standard secure SMTP port
-      secure: false, // true for 465, false for other ports
+      port: 587,
+      secure: false, 
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
-      // Yeh line connection problems ko theek karne me madad karti hai
-      tls: {
-          ciphers:'SSLv3'
-      }
     });
 
     // Email send karein
@@ -26,13 +22,12 @@ const mailSender = async (email, title, body) => {
       html: body,
     });
 
-    console.log(" Mail Sent:", info.response);
+    console.log("✅ Mail Sent Successfully:", info.response);
     return info;
 
   } catch (error) {
-    console.log(" Mail Error:", error.message);
-    // Error aane par bhi, aage badhein taaki server crash na ho
-    return error;
+    console.log("❌ Mail Sending Error:", error.message);
+    throw error;
   }
 };
 
