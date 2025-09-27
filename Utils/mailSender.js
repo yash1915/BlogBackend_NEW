@@ -26,11 +26,11 @@ const mailSender = async (email, title, body) => {
       html: body,
     });
 
-    console.log("✅ Mail Sent:", info.response);
+    console.log(" Mail Sent:", info.response);
     return info;
 
   } catch (error) {
-    console.log("❌ Mail Error:", error.message);
+    console.log(" Mail Error:", error.message);
     // Error aane par bhi, aage badhein taaki server crash na ho
     return error;
   }
