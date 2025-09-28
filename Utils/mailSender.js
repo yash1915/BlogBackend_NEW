@@ -3,18 +3,16 @@ require("dotenv").config();
 
 const mailSender = async (email, title, body) => {
   try {
-    // Transporter create karein (Brevo ke liye sahi settings ke saath)
+    // This is the recommended transporter configuration for Gmail
     let transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      port: 587,
-      secure: false, 
+      service: 'gmail', // Use the 'gmail' service for simplicity and reliability
       auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        user: process.env.MAIL_USER, // Your full Gmail address (e.g., example@gmail.com)
+        pass: process.env.MAIL_PASS, // Your 16-digit Google App Password
       },
     });
 
-    // Email send karein
+    // Send the email
     let info = await transporter.sendMail({
       from: `"Blog Application" <${process.env.MAIL_USER}>`,
       to: email,
@@ -27,6 +25,7 @@ const mailSender = async (email, title, body) => {
 
   } catch (error) {
     console.log("❌ Mail Sending Error:", error.message);
+    // This is crucial: it ensures that if the email fails, a proper error is sent back
     throw error;
   }
 };
