@@ -32,6 +32,7 @@ exports.sendOTP = async (req, res) => {
         }
         const otpPayload = { email, otp };
         await OTP.create(otpPayload);
+        console.log("send to mailer");
         await mailSender(
             email,
             "Verification Email from Blog Application",
