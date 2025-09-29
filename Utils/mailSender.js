@@ -5,7 +5,10 @@ const mailSender = async (email, title, body) => {
   try {
     // Gmail ke liye yeh sabse behtar configuration hai
     let transporter = nodemailer.createTransport({
-      service: 'gmail', // 'host' ki jagah 'service' ka istemal karein
+       host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  requireTLS: true,// 'host' ki jagah 'service' ka istemal karein
       auth: {
         user: process.env.MAIL_USER, // Aapka poora Gmail address
         pass: process.env.MAIL_PASS, // Aapka 16-digit ka Google App Password
