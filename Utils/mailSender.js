@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config();
+
 
 const mailSender = async (email, title, body) => {
   try {
@@ -14,7 +14,7 @@ const mailSender = async (email, title, body) => {
 
     // Email send karein
     let info = await transporter.sendMail({
-      from: `"Blog Application" <${process.env.MAIL_USER}>`,
+      from: process.env.MAIL_USER,
       to: email,
       subject: title,
       html: body,
