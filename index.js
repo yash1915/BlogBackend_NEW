@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: "*", // Aap production me ise apne frontend URL se replace kar sakte hain
+    origin: "https://blog-frontend-new-plum.vercel.app", // Aap production me ise apne frontend URL se replace kar sakte hain
     credentials: true,
 }));
 app.use(cookieParser());
