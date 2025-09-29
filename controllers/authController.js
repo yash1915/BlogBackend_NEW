@@ -32,6 +32,12 @@ exports.sendOTP = async (req, res) => {
         }
         const otpPayload = { email, otp };
         await OTP.create(otpPayload);
+        await mailSender(
+            email,
+            "Verification Email from Blog Application",
+            `<h1>Please confirm your OTP</h1>
+             <p>Here is your OTP code: ${otp}</p>`
+        );
         res.status(200).json({ success: true, message: "OTP sent successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
