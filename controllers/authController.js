@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const OTP = require("../models/OTP");
-const Post = require("../models/postModel");
-const Comment = require("../models/commentModel");
+
 const otpGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -195,6 +194,8 @@ exports.resetPassword = async (req, res) => {
 // DELETE ACCOUNT
 exports.deleteAccount = async (req, res) => {
     try {
+        const Post = require("../models/postModel");
+        const Comment = require("../models/commentModel");
         const userId = req.user.id;
         const { password } = req.body;
         if (!password) {
