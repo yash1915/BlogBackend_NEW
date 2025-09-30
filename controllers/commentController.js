@@ -94,5 +94,25 @@ exports.deleteComment = async (req, res) => {
     }
 };
 
-// Get Comments for a Post (No changes needed here)
-exports.getCommentsByPost = async (req, res) => { /* ... No changes ... */ };
+// Get Comments for a Post
+exports.getCommentsByPost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const post = await Post.findById(postId).populate({
+            path: 'comments',
+            populate: {
+                path: 'user',
+                select: 'firstName lastName' // Sirf zaroori details lein
+            }
+        });
+
+        if (!post) {
+            return res.status(404).json({ success: false, error: "Post not found" });
+        }
+
+        res.status(200).json({ success: true, comments: post.comments });
+
+    } catch (err) {
+        return res.status(500).json({ success: false, error: "Error fetching comments" });
+    }
+};
