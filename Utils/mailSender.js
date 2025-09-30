@@ -1,35 +1,40 @@
-const nodemailer = require("nodemailer");
+const Brevo = require('@getbrevo/brevo');
+require("dotenv").config();
 
 
 const mailSender = async (email, title, body) => {
   try {
-    // Gmail ke liye yeh sabse behtar configuration hai
-    let transporter = nodemailer.createTransport({
-       host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,// 'host' ki jagah 'service' ka istemal karein
-      auth: {
-        user: process.env.MAIL_USER, // Aapka poora Gmail address
-        pass: process.env.MAIL_PASS, // Aapka 16-digit ka Google App Password
-      },
-    });
+    // TransactionalEmailsApi ka ek naya instance banayein
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    console.log("Loading Brevo API Key:", process.env.BREVO_API_KEY);
 
-    // Email send karein
-    let info = await transporter.sendMail({
-      from: process.env.MAIL_USER,
-      to: email,
-      subject: title,
-      html: body,
-    });
+    // === YEH AUTHENTICATION KA BILKUL SAHI TAREEKA HAI ===
+    // .setApiKey() method ka istemal karein
+    apiInstance.setApiKey(
+        Brevo.TransactionalEmailsApiApiKeys.apiKey, 
+        process.env.BREVO_API_KEY
+    );
 
-    console.log("✅ Mail Sent Successfully:", info.response);
-    return info;
+    const sendSmtpEmail = new Brevo.SendSmtpEmail();
+
+    // Email ki details set karein
+    sendSmtpEmail.subject = title;
+    sendSmtpEmail.htmlContent = body;
+    sendSmtpEmail.sender = { "name": "Blog App", "email": "yashmalviya476@gmail.com" };
+    sendSmtpEmail.to = [{ "email": email }];
+
+    // Email bhejein
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    
+    console.log("✅ Mail Sent Successfully using Brevo API:", data);
+    return data;
 
   } catch (error) {
-    console.log("❌ Mail Sending Error:", error.message);
-    // YEH SABSE ZAROORI BADLAV HAI: Error ko throw karein
-    // Isse aapke controller ko pata chalega ki email fail ho gaya hai
+    console.error("❌ Brevo API Mail Sending Error:", error.message);
+    // Behtar error details ke liye
+    if (error.response) {
+      console.error(error.response.body);
+    }
     throw error;
   }
 };
