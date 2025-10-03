@@ -26,11 +26,11 @@ const mailSender = async (email, title, body) => {
     // Email bhejein
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
     
-    console.log("✅ Mail Sent Successfully using Brevo API:", data);
+    console.log(" Mail Sent Successfully using Brevo API:", data);
     return data;
 
   } catch (error) {
-    console.error("❌ Brevo API Mail Sending Error:", error.message);
+    console.error(" Brevo API Mail Sending Error:", error.message);
     // Behtar error details ke liye
     if (error.response) {
       console.error(error.response.body);
