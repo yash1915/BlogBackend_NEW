@@ -6,9 +6,9 @@ const dbConnect = () => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
-    .then(() => console.log("✅ Database connection successful"))
+    .then(() => console.log(" Database connection successful"))
     .catch((error) => {
-        console.error("❌ Database connection error:", error);
+        console.error(" Database connection error:", error);
         process.exit(1);
     });
 };
